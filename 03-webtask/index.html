@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <title>SPA</title>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="http://cdn.auth0.com/js/auth0/8.7.0/auth0.min.js"></script>
+</head>
+<body>
+
+	<button id="wt_button">Webtask</button>
+	<button id="mgt_button">GET /api/v2/users/{id}</button>
+	API TOKEN: <span id="api_token"></span>
+	
+	<div id="output"></div>
+
+	<script>
+		$( document ).ready(function() {
+
+			var accessToken = "";
+
+			$( "#wt_button" ).click(function() {
+				$('#output').html('<br>');
+	  			
+	  			var webtaskUrl = "{AUTH0_WEBTASK_URL}";
+	    		$('#output').append("GET " + webtaskUrl + "<br><br>");
+
+				$.getJSON( webtaskUrl, function( data ) {
+
+					accessToken = data.access_token;
+					$('#api_token').text(accessToken.substring(0, 10) + "...");
+
+					$.each( data, function( key, val ) {
+						$('#output').append(key + ": " + val + "<br><br>");
+					});
+
+				});
+			});
+
+			$( "#mgt_button" ).click(function() {
+				$('#output').html('<br>');
+
+				if (accessToken === '') {
+					$('#output').append("Access token is empty");
+					return;
+				}
+
+				$('#output').append("GET api/v2/users/{id} <br><br>");
+
+				var settings = {
+				  "async": true,
+				  "crossDomain": true,
+				  "url": "https://{AUTH0_DOMAIN}/api/v2/users/{USER_ID}",
+				  "method": "GET",
+				  "headers": {
+				    "authorization": "Bearer " + accessToken
+				  }
+				}
+
+				$.ajax(settings).done(function (response) {
+				  console.log(response);
+
+				    $('#output').append("user_id: " + response.user_id + "<br><br>");
+				  	$.each(response.identities, function( key, val ) {
+				  		$('#output').append("identities.provider: " + val.provider + "<br>");
+				  		$('#output').append("identities.access_token: " + val.access_token + "<br><br>");
+				  	});
+
+				});
+			});
+
+		});
+	</script>
+
+</body>
+</html>

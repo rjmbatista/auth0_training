@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+
+  <title>SPA with Implicit Grant</title>
+  <script src="http://cdn.auth0.com/js/auth0/8.7.0/auth0.min.js"></script>
+
+  <script>
+	window.addEventListener('load', function() {
+
+	  var webAuth = new auth0.WebAuth({
+	    domain: '{AUTH0_DOMAIN}',
+	    clientID: '{AUTH0_CLIENT_ID}'
+	  });
+
+	  var loginButton = document.getElementById('login_button');
+	  loginButton.addEventListener('click', function(e) {
+		    e.preventDefault();
+
+		    webAuth.authorize({
+		  	    audience: '{AUTH0_API_AUDIENCE}',
+		  	    //audience: 'http://{AUTH0_DOMAIN}/userinfo',
+	  	    	redirectUri: location.href,
+		  		scope: 'openid profile',
+	  			responseType: 'token id_token',
+	  			leeway: 30
+		  	});
+
+	  });
+
+	  webAuth.parseHash(function(err, authResult) {
+	      var outputConsole = document.getElementById('output_console');
+	      outputConsole.innerHTML = '';
+	      if (authResult) {
+	        window.location.hash = '';
+	        loginButton.style.display = 'none';
+	        
+	        if (authResult.accessToken) {
+	        	outputConsole.innerHTML += 'access_token: ' + authResult.accessToken + '<br><br>';
+	        }
+
+	        if (authResult.idToken) {
+	        	outputConsole.innerHTML += 'id_token: ' + authResult.idToken + '<br><br>';
+	        }
+
+	        if (authResult.expiresIn) {
+	        	outputConsole.innerHTML += 'expires_in: ' + authResult.expiresIn + '<br><br>';
+	        }
+
+	      } else if (err) {
+	        console.log(err);
+	      }
+	    });
+
+	});
+  </script>
+
+</head>
+<body>
+
+  <button id="login_button">Log In</button>
+
+  <div id="output_console"></div>
+
+</body>
+</html>

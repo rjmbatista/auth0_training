@@ -1,0 +1,26 @@
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="http://code.jquery.com/jquery-3.1.0.min.js" type="text/javascript"></script>
+        <script src="https://cdn.auth0.com/js/auth0/8.6.0/auth0.min.js"></script>
+        <script>
+        $(document).ready(function() {
+
+            $('#btn-logout').click(function(e) {
+              e.preventDefault();
+              window.location.href = '/logout';
+            })
+
+        });
+        </script>
+
+    </head>
+    <body>
+        <button id="btn-logout">Logout</button>
+        <br><br>
+        access_token: {{token['access_token']}}<br>
+        id_token: {{token['id_token']}}<br>
+        expires_in: {{token['expires_in']}}<br>
+        token_type: {{token['token_type']}}<br>
+    </body>
+</html>
