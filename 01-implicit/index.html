@@ -8,9 +8,14 @@
   <script>
 	window.addEventListener('load', function() {
 
+      var AUTH0_DOMAIN = "";
+      var AUTH0_CLIENT_ID = "";
+      //var AUTH0_API_AUDIENCE = "http://localhost:3000";
+      var AUTH0_API_AUDIENCE = 'https://' + AUTH0_DOMAIN + '/userinfo';
+
 	  var webAuth = new auth0.WebAuth({
-	    domain: '{AUTH0_DOMAIN}',
-	    clientID: '{AUTH0_CLIENT_ID}'
+	    domain: AUTH0_DOMAIN,
+	    clientID: AUTH0_CLIENT_ID
 	  });
 
 	  var loginButton = document.getElementById('login_button');
@@ -18,8 +23,7 @@
 		    e.preventDefault();
 
 		    webAuth.authorize({
-		  	    audience: '{AUTH0_API_AUDIENCE}',
-		  	    //audience: 'http://{AUTH0_DOMAIN}/userinfo',
+		  	    audience: AUTH0_API_AUDIENCE,
 	  	    	redirectUri: location.href,
 		  		scope: 'openid profile',
 	  			responseType: 'token id_token',
