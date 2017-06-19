@@ -10,6 +10,8 @@ from flask import request
 from flask import send_from_directory
 from flask import session
 
+import urllib
+
 APP = Flask(__name__, static_url_path='')
 APP.secret_key = 'secretkey'
 APP.debug = True
@@ -20,6 +22,7 @@ AUTH0_CLIENT_SECRET = ''
 AUTH0_CALLBACK_URL = 'http://localhost:3000/callback'
 AUTH0_AUDIENCE_API = 'http://localhost:3000'
 #AUTH0_AUDIENCE_API = 'https://'+AUTH0_DOMAIN+'/userinfo'
+AUTH0_RETURN_TO_URL = urllib.quote('http://localhost:3000')
 
 @APP.route('/')
 def index():
@@ -39,7 +42,7 @@ def callback_handling():
 @APP.route('/logout')
 def logout():
     session.clear()
-    return redirect('https://' + AUTH0_DOMAIN + '/v2/logout?returnTo=' + AUTH0_CALLBACK_URL + '&client_id=' + AUTH0_CLIENT_ID)
+    return redirect('https://' + AUTH0_DOMAIN + '/v2/logout?returnTo=' + AUTH0_RETURN_TO_URL + '&client_id=' + AUTH0_CLIENT_ID)
 
 
 if __name__ == "__main__":
