@@ -14,14 +14,17 @@ APP = Flask(__name__, static_url_path='')
 APP.secret_key = 'secretkey'
 APP.debug = True
 
-AUTH0_DOMAIN = '{AUTH0_DOMAIN}'
-AUTH0_CLIENT_ID = '{AUTH0_CLIENT_ID}'
-AUTH0_CLIENT_SECRET = '{AUTH0_CLIENT_SECRET}'
-AUTH0_CALLBACK_URL = '{AUTH0_CALLBACK_URL}'
+AUTH0_DOMAIN = ''
+AUTH0_CLIENT_ID = ''
+AUTH0_CLIENT_SECRET = ''
+AUTH0_CALLBACK_URL = 'http://localhost:3000/callback'
+AUTH0_AUDIENCE_API = 'http://localhost:3000'
+#AUTH0_AUDIENCE_API = 'https://'+AUTH0_DOMAIN+'/userinfo'
 
 @APP.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', auth0_domain=AUTH0_DOMAIN, auth0_client_id=AUTH0_CLIENT_ID, 
+        auth0_audience_api=AUTH0_AUDIENCE_API, auth0_callback_url=AUTH0_CALLBACK_URL)
 
 @APP.route('/callback')
 def callback_handling():

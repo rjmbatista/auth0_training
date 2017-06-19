@@ -6,17 +6,17 @@
         <script>
         $(document).ready(function() {
             var auth = new auth0.WebAuth({
-              domain: '{AUTH0_DOMAIN}',
-              clientID: '{AUTH0_CLIENT_ID}'
+              domain: '{{auth0_domain}}',
+              clientID: '{{auth0_client_id}}'
             });
 
             $('#btn-login').click(function(e) {
               e.preventDefault();
               auth.authorize({
-                audience: 'https://{AUTH0_DOMAIN}/userinfo',
+                audience: '{{auth0_audience_api}}',
                 scope: 'openid',
                 responseType: 'code',
-                redirectUri: '{AUTH0_CALLBACK_URL}'
+                redirectUri: '{{auth0_callback_url}}'
               }); 
             });
 
