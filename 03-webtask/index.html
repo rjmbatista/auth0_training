@@ -16,12 +16,16 @@
 	<script>
 		$( document ).ready(function() {
 
+			var AUTH0_WEBTASK_URL = "";
+			var AUTH0_DOMAIN = "";
+			var USER_ID = "";
+
 			var accessToken = "";
 
 			$( "#wt_button" ).click(function() {
 				$('#output').html('<br>');
 	  			
-	  			var webtaskUrl = "{AUTH0_WEBTASK_URL}";
+	  			var webtaskUrl = AUTH0_WEBTASK_URL;
 	    		$('#output').append("GET " + webtaskUrl + "<br><br>");
 
 				$.getJSON( webtaskUrl, function( data ) {
@@ -49,7 +53,7 @@
 				var settings = {
 				  "async": true,
 				  "crossDomain": true,
-				  "url": "https://{AUTH0_DOMAIN}/api/v2/users/{USER_ID}",
+				  "url": "https://" + AUTH0_DOMAIN + "/api/v2/users/" + USER_ID,
 				  "method": "GET",
 				  "headers": {
 				    "authorization": "Bearer " + accessToken
