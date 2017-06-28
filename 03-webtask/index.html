@@ -1,79 +1,76 @@
 <!doctype html>
 <html>
 <head>
-  <title>SPA</title>
-  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+  <title>SPA with Webtask</title>
+  <script src="http://code.jquery.com/jquery-3.1.0.min.js" type="text/javascript"></script>
   <script src="http://cdn.auth0.com/js/auth0/8.7.0/auth0.min.js"></script>
+
+  <script>
+	$(document).ready(function() {
+
+      var AUTH0_DOMAIN = "";
+      var AUTH0_CLIENT_ID = "";
+      var AUTH0_API_AUDIENCE = "";
+
+	  var webAuth = new auth0.WebAuth({
+	    domain: AUTH0_DOMAIN,
+	    clientID: AUTH0_CLIENT_ID
+	  });
+
+	  $('#webtask_button').click(function(e) {
+		    e.preventDefault();
+
+		    webAuth.authorize({
+		  	    audience: AUTH0_API_AUDIENCE,
+	  	    	redirectUri: location.href,
+		  		scope: 'openid profile',
+	  			responseType: 'token id_token',
+	  			leeway: 30
+		  	});
+
+	  });
+
+	  webAuth.parseHash(function(err, authResult) {
+	      var outputConsole = document.getElementById('output_console');
+	      outputConsole.innerHTML = '';
+	      
+	      if (authResult) {
+	        window.location.hash = '';
+	        
+	        if (authResult.accessToken) {
+	        	outputConsole.innerHTML += '<br>Got access token<br>Calling IDP...<br><br>';
+
+	        	$.ajax({
+	  				type: 'POST',
+                	url: '',
+                	data: '{ "api_url": "https://www.googleapis.com/youtube/v3/search?part=snippet&mine=true" }',
+                	contentType: 'application/json',
+                	headers: {
+        				'Authorization': 'Bearer ' + authResult.accessToken 
+    				},
+                	success: function(json){
+                		outputConsole.innerHTML += JSON.stringify(json);
+       					console.log(json);
+    				}
+        		});
+
+	        }
+
+	      } else if (err) {
+	        console.log(err);
+	      }
+	    });
+
+	});
+  </script>
+
 </head>
 <body>
 
-	<button id="wt_button">Webtask</button>
-	<button id="mgt_button">GET /api/v2/users/{id}</button>
-	API TOKEN: <span id="api_token"></span>
-	
-	<div id="output"></div>
+  <button id="webtask_button">Webtask</button>
 
-	<script>
-		$( document ).ready(function() {
-
-			var AUTH0_WEBTASK_URL = "";
-			var AUTH0_DOMAIN = "";
-			var USER_ID = "";
-
-			var accessToken = "";
-
-			$( "#wt_button" ).click(function() {
-				$('#output').html('<br>');
-	  			
-	  			var webtaskUrl = AUTH0_WEBTASK_URL;
-	    		$('#output').append("GET " + webtaskUrl + "<br><br>");
-
-				$.getJSON( webtaskUrl, function( data ) {
-
-					accessToken = data.access_token;
-					$('#api_token').text(accessToken.substring(0, 10) + "...");
-
-					$.each( data, function( key, val ) {
-						$('#output').append(key + ": " + val + "<br><br>");
-					});
-
-				});
-			});
-
-			$( "#mgt_button" ).click(function() {
-				$('#output').html('<br>');
-
-				if (accessToken === '') {
-					$('#output').append("Access token is empty");
-					return;
-				}
-
-				$('#output').append("GET api/v2/users/{id} <br><br>");
-
-				var settings = {
-				  "async": true,
-				  "crossDomain": true,
-				  "url": "https://" + AUTH0_DOMAIN + "/api/v2/users/" + USER_ID,
-				  "method": "GET",
-				  "headers": {
-				    "authorization": "Bearer " + accessToken
-				  }
-				}
-
-				$.ajax(settings).done(function (response) {
-				  console.log(response);
-
-				    $('#output').append("user_id: " + response.user_id + "<br><br>");
-				  	$.each(response.identities, function( key, val ) {
-				  		$('#output').append("identities.provider: " + val.provider + "<br>");
-				  		$('#output').append("identities.access_token: " + val.access_token + "<br><br>");
-				  	});
-
-				});
-			});
-
-		});
-	</script>
+  <div id="output_console"></div>
 
 </body>
 </html>
