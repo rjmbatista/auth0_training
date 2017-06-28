@@ -24,6 +24,14 @@ AUTH0_AUDIENCE_API = 'http://localhost:3000'
 #AUTH0_AUDIENCE_API = 'https://'+AUTH0_DOMAIN+'/userinfo'
 AUTH0_RETURN_TO_URL = urllib.quote('http://localhost:3000')
 
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "profile" not in session:
+            return redirect('/')
+        return f(*args, **kwargs)
+    return decorated
+    
 @APP.route('/')
 def index():
     return render_template('index.html', auth0_domain=AUTH0_DOMAIN, auth0_client_id=AUTH0_CLIENT_ID, 
@@ -32,10 +40,14 @@ def index():
 @APP.route('/callback')
 def callback_handling():
     code = request.args.get('code')
+
     get_token = GetToken(AUTH0_DOMAIN)
-    auth0_users = Users(AUTH0_DOMAIN)
     token = get_token.authorization_code(AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, code, AUTH0_CALLBACK_URL)
+    
+    auth0_users = Users(AUTH0_DOMAIN)
     user_info = auth0_users.userinfo(token['access_token'])
+    session['profile'] = json.loads(user_info)
+
     return render_template('dashboard.html',
                            user=json.loads(user_info), token=token)
 
@@ -47,3 +59,4 @@ def logout():
 
 if __name__ == "__main__":
     APP.run(host='0.0.0.0', port=3000)
+
