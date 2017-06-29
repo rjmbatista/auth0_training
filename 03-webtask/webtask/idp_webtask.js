@@ -16,7 +16,6 @@ const app = express();
 let accessToken = null;
 let lastLogin = null;
 const JWKS_URI = 'https://{AUTH0_DOMAIN}/.well-known/jwks.json';
-const AUDIENCE = '{CLIENT_ID}';
 const ISSUER = 'https://{AUTH0_DOMAIN}/';
 var jsonParser = bodyParser.json();
 
@@ -53,7 +52,7 @@ app.post('/', jsonParser, function(req, res, next) {
     async.waterfall([
         async.apply(getAccessToken, context, req.user),
         getUserProfile,
-        callExtIDPApi
+        callIDPApi
     ], function(err, result) {
         if (err) return res.status(400).json({
             error: err
@@ -110,9 +109,9 @@ function getUserProfile(context, decoded, token, cb){
  };
 
 /*
-* Call the External API with the IDP access token to return data back to the client.
+* Call the API with the IDP access token to return data back to the client.
 */
-function callExtIDPApi (context, decoded, token, user, cb) {
+function callIDPApi (context, decoded, token, user, cb) {
   let idp_access_token = null;
   const api = context.body.api_url;
   const provider = user.user_id.split('|')[0];
